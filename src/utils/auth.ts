@@ -4,11 +4,11 @@ import { useUserStoreHook } from "@/store/modules/user";
 
 export interface DataInfo<T> {
   /** token */
-  accessToken: string;
+  access: string;
+  /** 用于调用刷新accessToken的接口时所需的token */
+  refresh: string;
   /** `accessToken`的过期时间（时间戳） */
   expires: T;
-  /** 用于调用刷新accessToken的接口时所需的token */
-  refreshToken: string;
   /** 用户名 */
   username?: string;
   /** 当前登陆用户的角色 */
@@ -41,10 +41,13 @@ export function getToken(): DataInfo<number> {
  */
 export function setToken(data: DataInfo<Date>) {
   let expires = 0;
-  const { accessToken, refreshToken } = data;
+  const { access, refresh } = data;
   const { isRemembered, loginDay } = useUserStoreHook();
-  expires = new Date(data.expires).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
-  const cookieString = JSON.stringify({ accessToken, expires });
+
+  // Django 传token不会带过期时间, 要手动设置
+  expires = Date.now() +  60 * 60 * 1000;
+  // expires = new Date(data.expires).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
+  const cookieString = JSON.stringify({ access, expires });
 
   expires > 0
     ? Cookies.set(TokenKey, cookieString, {
@@ -66,7 +69,7 @@ export function setToken(data: DataInfo<Date>) {
     useUserStoreHook().SET_USERNAME(username);
     useUserStoreHook().SET_ROLES(roles);
     storageLocal().setItem(userKey, {
-      refreshToken,
+      refresh,
       expires,
       username,
       roles
