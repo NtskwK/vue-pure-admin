@@ -5,6 +5,7 @@ import NProgress from "@/utils/progress";
 import { transformI18n } from "@/plugins/i18n";
 import { buildHierarchyTree } from "@/utils/tree";
 import remainingRouter from "./modules/remaining";
+import errorRouter from "./modules/error";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import { isUrl, openLink, storageLocal, isAllEmpty } from "@pureadmin/utils";
@@ -37,11 +38,15 @@ import {
  * 如何排除文件请看：https://cn.vitejs.dev/guide/features.html#negative-patterns
  */
 const modules: Record<string, any> = import.meta.glob(
-  ["./modules/**/*.ts", "!./modules/**/remaining.ts"],
+  ["./modules/**/*.ts",
+    "!./modules/**/remaining.ts",
+    "!./modules/**/error.ts"  
+  ],
   {
     eager: true
   }
 );
+const othersRouter = [remainingRouter, errorRouter]
 
 /** 原始静态路由（未做任何处理） */
 const routes = [];
@@ -61,14 +66,14 @@ export const constantMenus: Array<RouteComponent> = ascending(
 ).concat(...remainingRouter);
 
 /** 不参与菜单的路由 */
-export const remainingPaths = Object.keys(remainingRouter).map(v => {
-  return remainingRouter[v].path;
+export const remainingPaths = Object.keys(othersRouter).map(v => {
+  return othersRouter[v].path;
 });
 
 /** 创建路由实例 */
 export const router: Router = createRouter({
   history: getHistoryMode(import.meta.env.VITE_ROUTER_HISTORY),
-  routes: constantRoutes.concat(...(remainingRouter as any)),
+  routes: constantRoutes.concat(...(othersRouter as any)),
   strict: true,
   scrollBehavior(to, from, savedPosition) {
     return new Promise(resolve => {
