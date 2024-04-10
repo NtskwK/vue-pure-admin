@@ -101,8 +101,11 @@ export function resetRouter() {
   usePermissionStoreHook().clearAllCachePage();
 }
 
-/** 路由白名单 */
-const whiteList = ["/login"];
+/** 访客路由 */
+const guestList = [
+  "/login",
+  "/register",
+];
 
 const { VITE_HIDE_HOME } = import.meta.env;
 
@@ -126,18 +129,20 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       else document.title = transformI18n(item.meta.title);
     });
   }
-  /** 如果已经登录并存在登录信息后不能跳转到路由白名单，而是继续保持在当前页面 */
+
+  /** 如果已经登录并存在登录信息后不能跳转到访客路由，而是继续保持在当前页面 */
   function toCorrectRoute() {
-    whiteList.includes(to.fullPath) ? next(_from.fullPath) : next();
+    guestList.includes(to.fullPath) ? next(_from.fullPath) : next();
   }
+
   if (Cookies.get(multipleTabsKey) && userInfo) {
     // 无权限跳转403页面
     if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
       next({ path: "/error/403" });
     }
-    // 开启隐藏首页后在浏览器地址栏手动输入首页welcome路由则跳转到404页面
+    // 开启隐藏首页后在浏览器地址栏手动输入首页welcome路由则跳转到首页
     if (VITE_HIDE_HOME === "true" && to.fullPath === "/welcome") {
-      next({ path: "/error/404" });
+      next({ path: "/" });
     }
     if (_from?.name) {
       // name为超链接
@@ -188,16 +193,33 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       toCorrectRoute();
     }
   } else {
-    if (to.path !== "/login") {
-      if (whiteList.indexOf(to.path) !== -1) {
-        next();
-      } else {
-        removeToken();
-        next({ path: "/login" });
-      }
-    } else {
+    if (to.path === "/login") {
       next();
+      return;
+    } 
+
+    // 没登陆的用户不能进入主页
+    if (to.path === "/welcome") {
+      next({path:"/login"});
+      return;
     }
+
+    function is40x(statusCode: string): boolean {
+      const regex = /^\/error\/40\d$/;
+      return regex.test(statusCode);
+    }
+    if (is40x(to.path)) {
+      next();
+      return;
+    }
+
+    if (guestList.indexOf(to.path) !== -1) {
+      next(); 
+      return;
+    } 
+    
+    removeToken();
+    next({ path: "/error/404" });
   }
 });
 
