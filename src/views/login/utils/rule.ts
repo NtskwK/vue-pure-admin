@@ -30,15 +30,19 @@ const loginRules = reactive<FormRules>({
   verifyCode: [
     {
       validator: (rule, value, callback) => {
-        if (value === "") {
-          callback(new Error(transformI18n($t("login.pureVerifyCodeReg"))));
-        } else if (useUserStoreHook().verifyCode !== value) {
-          callback(
-            new Error(transformI18n($t("login.pureVerifyCodeCorrectReg")))
-          );
-        } else {
-          callback();
-        }
+
+        // 关闭验证码
+        callback();
+
+        // if (value === "") {
+        //   callback(new Error(transformI18n($t("login.pureVerifyCodeReg"))));
+        // } else if (useUserStoreHook().verifyCode !== value) {
+        //   callback(
+        //     new Error(transformI18n($t("login.pureVerifyCodeCorrectReg")))
+        //   );
+        // } else {
+        //   callback();
+        // }
       },
       trigger: "blur"
     }
