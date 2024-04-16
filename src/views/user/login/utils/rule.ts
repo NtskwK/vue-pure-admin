@@ -2,7 +2,7 @@ import { reactive } from "vue";
 import { isPhone } from "@pureadmin/utils";
 import type { FormRules } from "element-plus";
 import { $t, transformI18n } from "@/plugins/i18n";
-import { useUserStoreHook } from "@/store/modules/user";
+// import { useUserStoreHook } from "@/store/modules/user";
 
 /** 6位数字验证码正则 */
 export const REGEXP_SIX = /^\d{6}$/;
@@ -30,7 +30,6 @@ const loginRules = reactive<FormRules>({
   verifyCode: [
     {
       validator: (rule, value, callback) => {
-
         // 关闭验证码
         callback();
 
