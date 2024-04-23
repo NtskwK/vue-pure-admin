@@ -6,6 +6,7 @@ import { transformI18n } from "@/plugins/i18n";
 import { buildHierarchyTree } from "@/utils/tree";
 import remainingRouter from "./modules/remaining";
 import errorRouter from "./modules/error";
+import registerRouter from "./modules/register";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import { isUrl, openLink, storageLocal, isAllEmpty } from "@pureadmin/utils";
@@ -38,15 +39,17 @@ import {
  * 如何排除文件请看：https://cn.vitejs.dev/guide/features.html#negative-patterns
  */
 const modules: Record<string, any> = import.meta.glob(
-  ["./modules/**/*.ts",
+  [
+    "./modules/**/*.ts",
     "!./modules/**/remaining.ts",
-    "!./modules/**/error.ts"  
+    "!./modules/**/error.ts",
+    "!./modules/**/register.ts"
   ],
   {
     eager: true
   }
 );
-const othersRouter = [remainingRouter, errorRouter]
+const othersRouter = [remainingRouter, errorRouter, registerRouter];
 
 /** 原始静态路由（未做任何处理） */
 const routes = [];
@@ -107,10 +110,7 @@ export function resetRouter() {
 }
 
 /** 访客路由 */
-const guestList = [
-  "/login",
-  "/register",
-];
+const guestList = ["/login", "/register"];
 
 const { VITE_HIDE_HOME } = import.meta.env;
 
@@ -201,11 +201,11 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     if (to.path === "/login") {
       next();
       return;
-    } 
+    }
 
     // 没登陆的用户不能进入主页
     if (to.path === "/welcome") {
-      next({path:"/login"});
+      next({ path: "/login" });
       return;
     }
 
@@ -219,10 +219,10 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     }
 
     if (guestList.indexOf(to.path) !== -1) {
-      next(); 
+      next();
       return;
-    } 
-    
+    }
+
     removeToken();
     next({ path: "/error/404" });
   }
