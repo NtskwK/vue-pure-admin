@@ -36,14 +36,32 @@ export const getLogin = (data?: object) => {
 
 /** 刷新token */
 export const refreshTokenApi = (data?: object) => {
-  return http.request<RefreshTokenResult>("post", baseUrlApi("/login/refresh/"), { data });
+  return http.request<RefreshTokenResult>(
+    "post",
+    baseUrlApi("/login/refresh/"),
+    { data }
+  );
 };
 
 // 获取当前用户信息
 export const getUserInfo = (data?: object) => {
   return http.request<UserResult>("get", baseUrlApi("info/"), { data });
-}
+};
 
 export const registerUserApi = (data?: object) => {
   return http.request<any>("post", baseUrlApi("users/create/"), { data });
-}
+};
+
+export const getUserList = (data?: object) => {
+  return http.request<UserResult>("get", baseUrlApi("users/"), { data });
+};
+
+export const updateUser = (userId: Number, data: object) => {
+  return http.request<UserResult>("post", baseUrlApi("users/" + userId + "/"), {
+    data
+  });
+};
+
+export const deleteUser = (data?: object) => {
+  return http.request<UserResult>("get", baseUrlApi("info/"), { data });
+};
