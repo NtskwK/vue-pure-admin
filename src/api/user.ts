@@ -1,5 +1,6 @@
 import { http } from "@/utils/http";
 import { baseUrlApi } from "./utils";
+// import { DataInfo } from "@/utils/auth";
 
 export type UserResult = {
   success: boolean;
@@ -31,29 +32,31 @@ export type RefreshTokenResult = {
 
 /** 登录 */
 export const getLogin = (data?: object) => {
-  return http.request<any>("post", baseUrlApi("login/"), { data });
+  return http.request<any>("post", baseUrlApi("token-auth/"), { data });
 };
 
 /** 刷新token */
 export const refreshTokenApi = (data?: object) => {
-  return http.request<RefreshTokenResult>(
-    "post",
-    baseUrlApi("/login/refresh/"),
-    { data }
-  );
+  return http.request<RefreshTokenResult>("post", baseUrlApi("token-auth/"), {
+    data
+  });
 };
 
 // 获取当前用户信息
 export const getUserInfo = (data?: object) => {
-  return http.request<UserResult>("get", baseUrlApi("info/"), { data });
+  return http.request<UserResult>("get", baseUrlApi("admin/users/info"), {
+    data
+  });
 };
 
 export const registerUserApi = (data?: object) => {
   return http.request<any>("post", baseUrlApi("users/create/"), { data });
 };
 
-export const getUserList = (data?: object) => {
-  return http.request<UserResult>("get", baseUrlApi("users/"), { data });
+export const getUserList = (params?: object) => {
+  console.log(params);
+
+  return http.request<any>("get", baseUrlApi("users/"), { params });
 };
 
 export const updateUser = (userId: Number, data: object) => {
@@ -62,6 +65,6 @@ export const updateUser = (userId: Number, data: object) => {
   });
 };
 
-export const deleteUser = (data?: object) => {
-  return http.request<UserResult>("get", baseUrlApi("info/"), { data });
+export const deleteUser = (params?: object) => {
+  return http.request<any>("get", baseUrlApi("users/"), { params });
 };

@@ -54,15 +54,10 @@ export const useUserStore = defineStore({
     async loginByUsername(data) {
       return new Promise<UserResult>((resolve, reject) => {
         getLogin(data)
-          .then(data => {            
+          .then(data => {
             if (data) {
               setToken(data);
-
-              const infoToken = { access: data.access }
-              data = getUserInfo(infoToken);
-              
-              const wrapData:UserResult = { success: true, data};
-              resolve(wrapData);
+              resolve({ success: true, data });
             }
           })
           .catch(error => {

@@ -45,7 +45,8 @@ export function setToken(data: DataInfo<Date>) {
   const { isRemembered, loginDay } = useUserStoreHook();
 
   // Django 传token不会带过期时间, 要手动设置
-  expires = Date.now() +  60 * 60 * 1000;
+  // 6小时过期
+  expires = Date.now() + 60 * 60 * 1000;
   // expires = new Date(data.expires).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
   const cookieString = JSON.stringify({ access, expires });
 
@@ -75,6 +76,8 @@ export function setToken(data: DataInfo<Date>) {
       roles
     });
   }
+
+  console.log(data);
 
   if (data.username && data.roles) {
     const { username, roles } = data;
