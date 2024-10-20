@@ -1,14 +1,13 @@
 import { http } from "@/utils/http";
 import { baseUrlApi } from "./utils";
-// import { DataInfo } from "@/utils/auth";
 
 export type UserResult = {
   success: boolean;
   data: {
     /** 用户名 */
-    username: string;
+    username?: string;
     /** 当前登陆用户的角色 */
-    roles: Array<string>;
+    roles?: Array<string>;
     /** `token` */
     access: string;
     /** 用于调用刷新`accessToken`的接口时所需的`token` */
@@ -30,14 +29,20 @@ export type RefreshTokenResult = {
   };
 };
 
+export type GetTokenResult = {
+  token: string;
+};
+
 /** 登录 */
 export const getLogin = (data?: object) => {
-  return http.request<any>("post", baseUrlApi("token-auth/"), { data });
+  return http.request<GetTokenResult>("post", baseUrlApi("token-auth/"), {
+    data
+  });
 };
 
 /** 刷新token */
 export const refreshTokenApi = (data?: object) => {
-  return http.request<RefreshTokenResult>("post", baseUrlApi("token-auth/"), {
+  return http.request<RefreshTokenResult>("post", baseUrlApi("auth/login/"), {
     data
   });
 };
@@ -55,7 +60,6 @@ export const registerUserApi = (data?: object) => {
 
 export const getUserList = (params?: object) => {
   console.log(params);
-
   return http.request<any>("get", baseUrlApi("users/"), { params });
 };
 

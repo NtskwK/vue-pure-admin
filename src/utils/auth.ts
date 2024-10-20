@@ -77,8 +77,6 @@ export function setToken(data: DataInfo<Date>) {
     });
   }
 
-  console.log(data);
-
   if (data.username && data.roles) {
     const { username, roles } = data;
     setUserKey(username, roles);
@@ -100,5 +98,5 @@ export function removeToken() {
 
 /** 格式化token（jwt格式） */
 export const formatToken = (token: string): string => {
-  return "Bearer " + token;
+  return "JWT " + token;
 };

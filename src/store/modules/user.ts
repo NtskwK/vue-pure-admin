@@ -56,8 +56,13 @@ export const useUserStore = defineStore({
         getLogin(data)
           .then(data => {
             if (data) {
-              setToken(data);
-              resolve({ success: true, data });
+              const DataInfo = {
+                access: data.token,
+                refresh: data.token,
+                expires: new Date(Date.now() + 3600 * 1000)
+              };
+              setToken(DataInfo);
+              resolve({ success: true, data: DataInfo });
             }
           })
           .catch(error => {
@@ -95,7 +100,7 @@ export const useUserStore = defineStore({
         refreshTokenApi(data)
           .then(data => {
             if (data) {
-              setToken(data.data);
+              // setToken(data.data);
               resolve(data);
             }
           })

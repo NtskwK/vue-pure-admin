@@ -32,6 +32,8 @@ import Lock from "@iconify-icons/ri/lock-fill";
 import Check from "@iconify-icons/ep/check";
 import User from "@iconify-icons/ri/user-3-fill";
 import Info from "@iconify-icons/ri/information-line";
+import { UserResult, getUserInfo } from "@/api/user";
+import { setToken } from "@/utils/auth";
 
 defineOptions({
   name: "Login"
@@ -57,8 +59,8 @@ const { title, getDropdownItemStyle, getDropdownItemClass } = useNav();
 const { locale, translationCh, translationEn } = useTranslationLang();
 
 const ruleForm = reactive({
-  username: "test",
-  password: "test123456",
+  username: "admin",
+  password: "adminadmin",
   verifyCode: ""
 });
 
@@ -73,8 +75,22 @@ const onLogin = async (formEl: FormInstance | undefined) => {
           password: ruleForm.password
         })
         .then(res => {
-          console.log(res);
           if (res.success) {
+            getUserInfo({ access: res.data.access }).then(async info => {
+              if (await info) {
+                const userInfo: UserResult = {
+                  success: true,
+                  data: {
+                    username: info.data.username,
+                    roles: info.data.roles,
+                    access: res.data.access,
+                    refresh: res.data.refresh,
+                    expires: new Date(Date.now() + 3600 * 10000)
+                  }
+                };
+                setToken(userInfo.data);
+              }
+            });
             // 获取后端路由
             return initRouter().then(() => {
               disabled.value = true;
@@ -124,7 +140,7 @@ watch(loginDay, value => {
 
 <template>
   <div class="select-none">
-    <img :src="bg" class="wave" />
+    <img :src="bg" class="wave" alt="" />
     <div class="flex-c absolute right-5 top-3">
       <!-- 主题 -->
       <el-switch
@@ -305,11 +321,11 @@ watch(loginDay, value => {
 
           <Motion v-if="currentPage === 0" :delay="350">
             <el-form-item>
-              <el-divider>
-                <p class="text-gray-500 text-xs">
-                  {{ t("login.pureThirdLogin") }}
-                </p>
-              </el-divider>
+              <!--              <el-divider>-->
+              <!--                <p class="text-gray-500 text-xs">-->
+              <!--                  {{ t("login.pureThirdLogin") }}-->
+              <!--                </p>-->
+              <!--              </el-divider>-->
               <div class="w-full flex justify-evenly">
                 <span
                   v-for="(item, index) in thirdParty"
