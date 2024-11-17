@@ -13,15 +13,17 @@ import { stringify } from "qs";
 import NProgress from "../progress";
 import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
+import Cookies from "js-cookie";
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
-  timeout: 10000,
+  timeout: 3000,
   headers: {
     Accept: "application/json, text/plain, */*",
     "Content-Type": "application/json",
-    "X-Requested-With": "XMLHttpRequest"
+    "X-Requested-With": "XMLHttpRequest",
+    "X-CSRFToken": Cookies.get("csrftoken")
   },
   // 数组格式参数序列化（https://github.com/axios/axios/issues/5142）
   paramsSerializer: {
@@ -84,6 +86,12 @@ class PureHttp {
                 if (expired) {
                   if (!PureHttp.isRefreshing) {
                     PureHttp.isRefreshing = true;
+                    // Django的版本太老了，没有刷新。只能重新登陆
+                    // const CookieKeys= [userKey, TokenKey, multipleTabsKey]
+                    // for(let k in CookieKeys){
+                    //   Cookies.remove(k)
+                    // }
+
                     // token过期刷新
                     useUserStoreHook()
                       .handRefreshToken({ refreshToken: data.refresh })
@@ -99,9 +107,7 @@ class PureHttp {
                   }
                   resolve(PureHttp.retryOriginalRequest(config));
                 } else {
-                  config.headers["Authorization"] = formatToken(
-                    data.access
-                  );
+                  config.headers["Authorization"] = formatToken(data.access);
                   resolve(config);
                 }
               } else {
