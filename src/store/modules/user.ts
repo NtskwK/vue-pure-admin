@@ -4,8 +4,8 @@ import type { userType } from "./types";
 import { routerArrays } from "@/layout/types";
 import { router, resetRouter } from "@/router";
 import { storageLocal } from "@pureadmin/utils";
-import { getLogin, getUserInfo, refreshTokenApi } from "@/api/user";
-import type { UserResult, RefreshTokenResult } from "@/api/user";
+import { getLogin, refreshTokenApi } from "@/api/user";
+import type { UserRolesResult, RefreshTokenResult } from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
 
@@ -52,7 +52,7 @@ export const useUserStore = defineStore({
     },
     /** 登入 */
     async loginByUsername(data) {
-      return new Promise<UserResult>((resolve, reject) => {
+      return new Promise<UserRolesResult>((resolve, reject) => {
         getLogin(data)
           .then(data => {
             if (data) {
@@ -71,19 +71,19 @@ export const useUserStore = defineStore({
       });
     },
 
-    async getUserInfo(data: any) {
-      return new Promise<UserResult>((resolve, reject) => {
-        getUserInfo(data)
-          .then(data => {
-            if (data) {
-              resolve(data);
-            }
-          })
-          .catch(error => {
-            reject(error);
-          });
-      });
-    },
+    // async getUserInfo(data: any) {
+    //   return new Promise<UserResult>((resolve, reject) => {
+    //     getUserInfo(data)
+    //       .then(data => {
+    //         if (data) {
+    //           resolve(data);
+    //         }
+    //       })
+    //       .catch(error => {
+    //         reject(error);
+    //       });
+    //   });
+    // },
 
     /** 前端登出（不调用接口） */
     logOut() {

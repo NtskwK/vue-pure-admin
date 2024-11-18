@@ -1,7 +1,7 @@
 import { http } from "@/utils/http";
 import { baseUrlApi } from "./utils";
 
-export type UserResult = {
+export type UserRolesResult = {
   success: boolean;
   data: {
     /** 用户名 */
@@ -14,7 +14,24 @@ export type UserResult = {
     refresh: string;
     /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
     expires: Date;
+    /** CSRF token */
+    csrftoken: string;
   };
+};
+
+export type UserDetailResult = {
+  id: number;
+  last_login: Date;
+  is_superuser: boolean;
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  is_staff: boolean;
+  is_active: boolean;
+  date_joined: Date;
+  groups: string[];
+  user_permissions: string[];
 };
 
 export type RefreshTokenResult = {
@@ -48,14 +65,21 @@ export const refreshTokenApi = (data?: object) => {
 };
 
 // 获取当前用户信息
-export const getUserInfo = (data?: object) => {
-  return http.request<UserResult>("get", baseUrlApi("admin/users/info"), {
+export const getUserRoles = (data: { access: string }) => {
+  return http.request<UserRolesResult>("get", baseUrlApi("users/info/"), {
     data
   });
 };
 
-export const registerUserApi = (data?: object) => {
+export const createUser = (data?: object) => {
   return http.request<any>("post", baseUrlApi("users/create/"), { data });
+};
+
+export const retrieveUser = (userId: Number) => {
+  return http.request<UserDetailResult>(
+    "get",
+    baseUrlApi("admin/users/" + userId + "/")
+  );
 };
 
 export const getUserList = (params?: object) => {
@@ -63,11 +87,15 @@ export const getUserList = (params?: object) => {
 };
 
 export const updateUser = (userId: Number, data: object) => {
-  return http.request<UserResult>("post", baseUrlApi("users/" + userId + "/"), {
-    data
-  });
+  return http.request<UserDetailResult>(
+    "patch",
+    baseUrlApi("admin/users/" + userId + "/"),
+    {
+      data
+    }
+  );
 };
 
-export const deleteUser = (params?: object) => {
-  return http.request<any>("get", baseUrlApi("users/"), { params });
+export const deleteUser = (userId: Number) => {
+  return http.request<any>("delete", baseUrlApi("users/" + userId + "/"));
 };

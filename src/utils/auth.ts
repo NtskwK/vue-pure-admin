@@ -13,6 +13,8 @@ export interface DataInfo<T> {
   username?: string;
   /** 当前登陆用户的角色 */
   roles?: Array<string>;
+  /** CSRF token */
+  csrftoken?: string;
 }
 
 export const userKey = "user-info";

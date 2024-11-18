@@ -32,7 +32,7 @@ import Lock from "@iconify-icons/ri/lock-fill";
 import Check from "@iconify-icons/ep/check";
 import User from "@iconify-icons/ri/user-3-fill";
 import Info from "@iconify-icons/ri/information-line";
-import { UserResult, getUserInfo } from "@/api/user";
+import { UserRolesResult, getUserRoles } from "@/api/user";
 import { setToken } from "@/utils/auth";
 
 defineOptions({
@@ -76,16 +76,18 @@ const onLogin = async (formEl: FormInstance | undefined) => {
         })
         .then(res => {
           if (res.success) {
-            getUserInfo({ access: res.data.access }).then(async info => {
-              if (await info) {
-                const userInfo: UserResult = {
+            console.log(res);
+            getUserRoles({ access: res.data.access }).then(info => {
+              if (info) {
+                const userInfo: UserRolesResult = {
                   success: true,
                   data: {
                     username: info.data.username,
                     roles: info.data.roles,
                     access: res.data.access,
                     refresh: res.data.refresh,
-                    expires: new Date(Date.now() + 3600 * 10000)
+                    expires: new Date(Date.now() + 3600 * 10000),
+                    csrftoken: res.data.csrftoken
                   }
                 };
                 setToken(userInfo.data);
