@@ -4,7 +4,7 @@ import { useColumns } from "./columns";
 const {
   loading,
   columns,
-  dataList,
+  userList,
   pagination,
   tableSize,
   loadingConfig,
@@ -20,7 +20,7 @@ const {
     :loading-config="loadingConfig"
     :pagination="pagination"
     :data="
-      dataList.slice(
+      userList.slice(
         (pagination.currentPage - 1) * pagination.pageSize,
         pagination.currentPage * pagination.pageSize
       )

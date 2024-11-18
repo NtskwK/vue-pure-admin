@@ -59,8 +59,7 @@ export const registerUserApi = (data?: object) => {
 };
 
 export const getUserList = (params?: object) => {
-  console.log(params);
-  return http.request<any>("get", baseUrlApi("users/"), { params });
+  return http.request<any>("get", baseUrlApi("admin/users/"), { params });
 };
 
 export const updateUser = (userId: Number, data: object) => {

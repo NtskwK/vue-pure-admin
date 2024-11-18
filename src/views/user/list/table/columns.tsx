@@ -1,32 +1,31 @@
 import { message } from "@/utils/message";
-import { tableData } from "./data";
-import { clone, delay } from "@pureadmin/utils";
+import { delay } from "@pureadmin/utils";
 import { ref, onMounted, reactive } from "vue";
 import type { PaginationProps, LoadingConfig } from "@pureadmin/table";
+import { getUserList } from "@/api/user";
 
 // 如果您不习惯tsx写法，可以传slot，然后在template里写
 // 需是hooks写法（函数中有return），避免失去响应性
 export function useColumns() {
-  const dataList = ref([]);
   const loading = ref(true);
   const tableSize = ref("default");
   const columns: TableColumnList = [
     {
-      label: "日期",
-      prop: "date",
+      label: "用户名",
+      prop: "username"
+    },
+    {
+      label: "邮箱",
+      prop: "email"
+    },
+    {
+      label: "上次登录时间",
+      prop: "last_login",
       cellRenderer: ({ row }) => (
         <div style="display: flex; align-items: center">
           <span style="margin-left: 10px">{row.date}</span>
         </div>
       )
-    },
-    {
-      label: "姓名",
-      prop: "name"
-    },
-    {
-      label: "地址",
-      prop: "address"
     },
     {
       label: "操作",
@@ -84,18 +83,23 @@ export function useColumns() {
     });
   }
 
+  const userList = ref([]);
   onMounted(() => {
-    delay(600).then(() => {
-      const newList = [];
-      Array.from({ length: 6 }).forEach(() => {
-        newList.push(clone(tableData, true));
+    getUserList()
+      .then(res => {
+        console.log(res.results);
+        res.results.flat(Infinity).forEach((item, index) => {
+          userList.value.push({ id: index, ...item });
+        });
+        pagination.total = userList.value.length;
+      })
+      .catch(err => {
+        message(err.message, { type: "error" });
+        throw err;
+      })
+      .finally(() => {
+        loading.value = false;
       });
-      newList.flat(Infinity).forEach((item, index) => {
-        dataList.value.push({ id: index, ...item });
-      });
-      pagination.total = dataList.value.length;
-      loading.value = false;
-    });
   });
 
   const handleEdit = (index: number, row) => {
@@ -111,8 +115,7 @@ export function useColumns() {
   return {
     loading,
     columns,
-    dataList,
-    tableData,
+    userList,
     tableSize,
     loadingConfig,
     pagination,
