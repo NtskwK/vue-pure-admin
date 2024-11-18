@@ -18,6 +18,26 @@ export default [
         meta: {
           title: "用户管理"
         }
+      },
+      {
+        path: "/users/detail/:id",
+        name: "userDetail",
+        component: () => import("@/views/user/detail/index.vue"),
+        meta: {
+          title: "用户详情",
+          showLink: false,
+          showParent: true
+        }
+      },
+      {
+        path: "/users/create",
+        name: "usersCreate",
+        component: () => import("@/views/user/register/index.vue"),
+        meta: {
+          title: "创建用户",
+          showLink: false,
+          showParent: true
+        }
       }
     ]
   }
