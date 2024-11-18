@@ -19,6 +19,7 @@ const {
     :loading="loading"
     :loading-config="loadingConfig"
     :pagination="pagination"
+    :default-sort="{ prop: 'id', order: 'ascending' }"
     :data="
       userList.slice(
         (pagination.currentPage - 1) * pagination.pageSize,

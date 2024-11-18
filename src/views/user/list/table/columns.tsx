@@ -3,6 +3,7 @@ import { delay } from "@pureadmin/utils";
 import { ref, onMounted, reactive } from "vue";
 import type { PaginationProps, LoadingConfig } from "@pureadmin/table";
 import { getUserList } from "@/api/user";
+import router from "@/router";
 
 // 如果您不习惯tsx写法，可以传slot，然后在template里写
 // 需是hooks写法（函数中有return），避免失去响应性
@@ -10,6 +11,10 @@ export function useColumns() {
   const loading = ref(true);
   const tableSize = ref("default");
   const columns: TableColumnList = [
+    {
+      label: "id",
+      prop: "id"
+    },
     {
       label: "用户名",
       prop: "username"
@@ -29,18 +34,19 @@ export function useColumns() {
     },
     {
       label: "操作",
-      cellRenderer: ({ index, row }) => (
+      // cellRenderer: ({ index, row }) => (
+      cellRenderer: ({ row }) => (
         <>
-          <el-button size="small" onClick={() => handleEdit(index + 1, row)}>
+          <el-button size="small" onClick={() => handleEdit(row)}>
             Edit
           </el-button>
-          <el-button
-            size="small"
-            type="danger"
-            onClick={() => handleDelete(index + 1, row)}
-          >
-            Delete
-          </el-button>
+          {/*<el-button*/}
+          {/*  size="small"*/}
+          {/*  type="danger"*/}
+          {/*  onClick={() => handleDelete(index + 1, row)}*/}
+          {/*>*/}
+          {/*  Delete*/}
+          {/*</el-button>*/}
         </>
       )
     }
@@ -102,15 +108,21 @@ export function useColumns() {
       });
   });
 
-  const handleEdit = (index: number, row) => {
-    message(`第${row}行数据更新成功`, {
-      type: "success"
-    });
+  const handleEdit = row => {
+    console.log(row.id);
+    router.push({ name: "userDetail", params: { id: row.id } });
+    // message(`第${row}行数据更新成功`, {
+    //   type: "success"
+    // });
   };
 
-  const handleDelete = (index: number, row) => {
-    message(`第${row}行数据删除成功`);
-  };
+  // const handleDelete = (index: number, row) => {
+  //
+  //   message(`第${row}行数据删除成功`,
+  //     {
+  //       type: "warning"
+  //     });
+  // };
 
   return {
     loading,
