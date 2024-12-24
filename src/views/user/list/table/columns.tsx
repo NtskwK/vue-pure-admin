@@ -1,7 +1,7 @@
 import { message } from "@/utils/message";
 import { delay } from "@pureadmin/utils";
-import { ref, onMounted, reactive } from "vue";
-import type { PaginationProps, LoadingConfig } from "@pureadmin/table";
+import { onMounted, reactive, ref } from "vue";
+import type { LoadingConfig, PaginationProps } from "@pureadmin/table";
 import { getUserList } from "@/api/user";
 import router from "@/router";
 
@@ -38,7 +38,7 @@ export function useColumns() {
       cellRenderer: ({ row }) => (
         <>
           <el-button size="small" onClick={() => handleEdit(row)}>
-            Edit
+            编辑
           </el-button>
           {/*<el-button*/}
           {/*  size="small"*/}
@@ -109,7 +109,6 @@ export function useColumns() {
   });
 
   const handleEdit = row => {
-    console.log(row.id);
     router.push({ name: "userDetail", params: { id: row.id } });
     // message(`第${row}行数据更新成功`, {
     //   type: "success"

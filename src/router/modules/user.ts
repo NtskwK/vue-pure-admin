@@ -22,7 +22,7 @@ export default [
       {
         path: "/users/detail/:id",
         name: "userDetail",
-        component: () => import("@/views/user/detail/index.vue"),
+        component: () => import("@/views/user/detail/detail.vue"),
         meta: {
           title: "用户详情",
           showLink: false,
