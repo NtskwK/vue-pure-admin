@@ -15,7 +15,7 @@ export type UserRolesResult = {
     /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
     expires: Date;
     /** CSRF token */
-    csrftoken: string;
+    csrftoken?: string;
   };
 };
 
