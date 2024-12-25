@@ -5,13 +5,13 @@ import Axios, {
 } from "axios";
 import type {
   PureHttpError,
-  RequestMethods,
+  PureHttpRequestConfig,
   PureHttpResponse,
-  PureHttpRequestConfig
+  RequestMethods
 } from "./types.d";
 import { stringify } from "qs";
 import NProgress from "../progress";
-import { getToken, formatToken } from "@/utils/auth";
+import { formatToken, getToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
 import Cookies from "js-cookie";
 
@@ -127,6 +127,10 @@ class PureHttp {
     instance.interceptors.response.use(
       (response: PureHttpResponse) => {
         const $config = response.config;
+        // 判断返回内容中是否有x-csrftoken
+        if (response.headers["x-csrftoken"]) {
+          Cookies.set("csrftoken", response.headers["x-csrftoken"]);
+        }
         // 关闭进度条动画
         NProgress.done();
         // 优先判断post/get等方法是否传入回调，否则执行初始化设置等回调

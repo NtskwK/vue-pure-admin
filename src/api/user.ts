@@ -15,7 +15,7 @@ export type UserRolesResult = {
     /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
     expires: Date;
     /** CSRF token */
-    csrftoken?: string;
+    csrftoken: string;
   };
 };
 
@@ -66,6 +66,7 @@ export const refreshTokenApi = (data?: object) => {
 
 // 获取当前用户信息
 export const getUserRoles = (data: { access: string }) => {
+  console.log(data);
   return http.request<UserRolesResult>("get", baseUrlApi("users/info/"), {
     data
   });

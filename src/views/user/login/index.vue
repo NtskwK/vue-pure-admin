@@ -17,10 +17,10 @@ import { $t, transformI18n } from "@/plugins/i18n";
 import { operates, thirdParty } from "./utils/enums";
 import { useLayout } from "@/layout/hooks/useLayout";
 import { useUserStoreHook } from "@/store/modules/user";
-import { initRouter, getTopMenu } from "@/router/utils";
-import { bg, avatar, illustration } from "./utils/static";
+import { getTopMenu, initRouter } from "@/router/utils";
+import { avatar, bg, illustration } from "./utils/static";
 import { ReImageVerify } from "@/components/ReImageVerify";
-import { ref, toRaw, reactive, watch, computed } from "vue";
+import { computed, reactive, ref, toRaw, watch } from "vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { useTranslationLang } from "@/layout/hooks/useTranslationLang";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
@@ -32,8 +32,6 @@ import Lock from "@iconify-icons/ri/lock-fill";
 import Check from "@iconify-icons/ep/check";
 import User from "@iconify-icons/ri/user-3-fill";
 import Info from "@iconify-icons/ri/information-line";
-import { UserRolesResult, getUserRoles } from "@/api/user";
-import { setToken } from "@/utils/auth";
 
 defineOptions({
   name: "Login"
@@ -76,23 +74,6 @@ const onLogin = async (formEl: FormInstance | undefined) => {
         })
         .then(res => {
           if (res.success) {
-            console.log(res);
-            getUserRoles({ access: res.data.access }).then(info => {
-              if (info) {
-                const userInfo: UserRolesResult = {
-                  success: true,
-                  data: {
-                    username: info.data.username,
-                    roles: info.data.roles,
-                    access: res.data.access,
-                    refresh: res.data.refresh,
-                    expires: new Date(Date.now() + 3600 * 10000),
-                    csrftoken: res.data.csrftoken
-                  }
-                };
-                setToken(userInfo.data);
-              }
-            });
             // 获取后端路由
             return initRouter().then(() => {
               disabled.value = true;

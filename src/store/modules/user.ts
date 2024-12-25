@@ -2,12 +2,12 @@ import { defineStore } from "pinia";
 import { store } from "@/store";
 import type { userType } from "./types";
 import { routerArrays } from "@/layout/types";
-import { router, resetRouter } from "@/router";
+import { resetRouter, router } from "@/router";
 import { storageLocal } from "@pureadmin/utils";
-import { getLogin, refreshTokenApi } from "@/api/user";
-import type { UserRolesResult, RefreshTokenResult } from "@/api/user";
+import type { RefreshTokenResult, UserRolesResult } from "@/api/user";
+import { getLogin, getUserRoles, refreshTokenApi } from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
-import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
+import { type DataInfo, removeToken, setToken, userKey } from "@/utils/auth";
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -54,36 +54,40 @@ export const useUserStore = defineStore({
     async loginByUsername(data) {
       return new Promise<UserRolesResult>((resolve, reject) => {
         getLogin(data)
-          .then(data => {
-            if (data) {
-              const DataInfo = {
-                access: data.token,
-                refresh: data.token,
-                expires: new Date(Date.now() + 3600 * 1000)
-              };
-              setToken(DataInfo);
-              resolve({ success: true, data: DataInfo });
-            }
+          .then(loginData => {
+            const tokenData: DataInfo<Date> = {
+              access: loginData.token,
+              refresh: loginData.token,
+              expires: new Date(Date.now() + 3600 * 10000)
+            };
+            setToken(tokenData);
+            getUserRoles({ access: loginData.token })
+              .then(info => {
+                if (info) {
+                  const userInfo: UserRolesResult = {
+                    success: true,
+                    data: {
+                      username: info.data.username,
+                      roles: info.data.roles,
+                      csrftoken: info.data.csrftoken,
+                      access: loginData.token,
+                      refresh: loginData.token,
+                      expires: new Date(Date.now() + 3600 * 10000)
+                    }
+                  };
+                  setToken(userInfo.data);
+                  resolve({ success: true, data: userInfo.data });
+                }
+              })
+              .catch(error => {
+                reject(error);
+              });
           })
           .catch(error => {
             reject(error);
           });
       });
     },
-
-    // async getUserInfo(data: any) {
-    //   return new Promise<UserResult>((resolve, reject) => {
-    //     getUserInfo(data)
-    //       .then(data => {
-    //         if (data) {
-    //           resolve(data);
-    //         }
-    //       })
-    //       .catch(error => {
-    //         reject(error);
-    //       });
-    //   });
-    // },
 
     /** 前端登出（不调用接口） */
     logOut() {
